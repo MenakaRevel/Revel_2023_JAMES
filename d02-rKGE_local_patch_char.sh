@@ -54,13 +54,10 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="fig06-rKGE_vs_var_char"
-
-expname="NOM_WSE_ERA5_CGLS_002"
-
+figname="d02-rKGE_local_patch_char"
 
 #*** 0. experiment list
-EXLIST="./Fig07-experiment_list.nam"
+EXLIST="./d02-experiment_list.nam"
 rm -r $EXLIST
 cat >> ${EXLIST} << EOF
 DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
@@ -76,6 +73,7 @@ NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
 NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
 NOM_All_Emp_050: NOM_WSE_ERA5_CGLS_062
 EOF
+
 ## NOM_All_Dst_Dam: NOM_WSE_ERA5_CGLS_008
 # EXLIST="./Fig01-experiment_list.nam"
 # rm -r $EXLIST
@@ -85,7 +83,7 @@ EOF
 # NOM_ThnObs: NOM_WSE_ERA5_CGLS_003
 # EOF
 
-STLIST="./Fig07-station_list.nam"
+STLIST="./d02-station_list.nam"
 rm -r $STLIST
 cat >> ${STLIST} << EOF
 4120951 #YELLOWSTONE-BILLINGS,MT
@@ -105,7 +103,15 @@ EOF
 # NOM_ThnDam: NOM_WSE_ERA5_CGLS_004
 
 #
-echo python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
-python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+# echo python src/metric_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+# python src/metric_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
 
+# open-loop local patch characteristics
+opnlist="./local_patch_char/open-loop_characteristics_wse.csv"
+
+echo python src/rKGE_local_patch_char_pdf.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $figname $NCPUS # &
+python src/rKGE_local_patch_char_pdf.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $figname $NCPUS # &
+
+# rm -r $EXLIST
+# rm -r $STLIST
 wait

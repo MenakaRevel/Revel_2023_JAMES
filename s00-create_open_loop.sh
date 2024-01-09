@@ -8,7 +8,7 @@
 #PBS -m ea
 #PBS -M menaka@rainbow.iis.u-tokyo.ac.jp
 #PBS -V
-#PBS -N Figure06
+#PBS -N Figure05
 
 #source ~/.bashrc
 # import virtual environment
@@ -54,13 +54,10 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="fig06-rKGE_vs_var_char"
-
-expname="NOM_WSE_ERA5_CGLS_002"
-
+figname="fig05-map_best_rKGE"
 
 #*** 0. experiment list
-EXLIST="./Fig07-experiment_list.nam"
+EXLIST="./Fig05-experiment_list.nam"
 rm -r $EXLIST
 cat >> ${EXLIST} << EOF
 DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
@@ -85,7 +82,7 @@ EOF
 # NOM_ThnObs: NOM_WSE_ERA5_CGLS_003
 # EOF
 
-STLIST="./Fig07-station_list.nam"
+STLIST="./Fig05-station_list.nam"
 rm -r $STLIST
 cat >> ${STLIST} << EOF
 4120951 #YELLOWSTONE-BILLINGS,MT
@@ -104,8 +101,13 @@ EOF
 
 # NOM_ThnDam: NOM_WSE_ERA5_CGLS_004
 
-#
-echo python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
-python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+# 
+echo python src/metric_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+python src/metric_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS #&
 
 wait
+
+rm -r $EXLIST
+rm -r $STLIST
+
+# conda deactivate

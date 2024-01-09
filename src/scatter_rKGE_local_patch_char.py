@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import datetime
 from matplotlib.colors import LogNorm,Normalize,ListedColormap,BoundaryNorm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from mpl_toolkits.basemap import Basemap
+# from mpl_toolkits.basemap import Basemap
 import matplotlib.cm as cm
 import matplotlib.gridspec as gridspec
 import matplotlib.lines as mlines
@@ -26,8 +26,9 @@ CaMa_dir=argv[3]
 mapname=argv[4]
 exlist=argv[5]
 stlist=argv[6]
-figname=argv[7]
-ncpus=int(sys.argv[8])
+opnlist=argv[7]
+figname=argv[8]
+ncpus=int(sys.argv[9])
 ens_mem=49
 seaborn_map=True
 # seaborn_map=False
@@ -96,8 +97,8 @@ satcov="./dat/satellite_coverage.bin"
 fname=CaMa_dir+"/map/"+mapname+"/1min/location.txt"
 with open(fname,"r") as f:
     lines=f.readlines()
-nXX = int(filter(None, re.split(" ",lines[2]))[6])
-nYY = int(filter(None, re.split(" ",lines[2]))[7])
+nXX = int(list(filter(None, re.split(" ",lines[2])))[6])
+nYY = int(list(filter(None, re.split(" ",lines[2])))[7])
 catmxy = CaMa_dir+"/map/"+mapname+"/1min/1min.catmxy.bin"
 catmxy = np.fromfile(catmxy,np.int16).reshape(2,nYY,nXX)
 #====================================================================
@@ -111,25 +112,56 @@ num_thr=1
 # df = df.loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]
 # df["log(UPAREA)"]=np.log10(df["UPAREA"])
 # df["ELEVTN"]=[elevtn[iy,ix] for iy,ix in zip(df["IY1"],df["IX1"])]
-
+#===================
+dfopnl=pd.read_csv(opnlist, sep=';')
+# dfopnl.set_index('ID',inplace=True)
+print (dfopnl.head())
+#===================
 dfout = pd.DataFrame()
+ii=0
 for exp,label in zip(experiments,labels):
-    print (exp)
+    print (ii, exp, label)
     dfname="./out/"+exp+"/datafile.csv"
     # print (dfname)
     df = pd.read_csv(dfname, sep=';')
     # add column with experiment label
     # print (df.head())
     df = df.loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7),:]
-    df['label']=[label]*len(df)
-    df["log(UPAREA)"]=np.log10(df["UPAREA"])
-    df["ELEVTN"]=[elevtn[iy,ix] for iy,ix in zip(df["IY1"],df["IX1"])]
-    df.dropna(inplace=True)
-    dfout = pd.concat([dfout,df], ignore_index = True) #, sort=False)
+    df.rename(columns={'GRDC_ID':'ID'}, inplace=True)
+    print (df.columns)
+    # df.set_index('ID',inplace=True)
+    # df.index.astype(dfopnl.index.dtypes.to_dict())
+    # print (df.head())
+    df_=pd.merge(df,dfopnl[['ID','minRMSE(open-loop)','minBias(open-loop)','minNSE(open-loop)',
+            'minKGE(open-loop)','minCC(open-loop)','minBR(open-loop)','minRV(open-loop)','minKGED(open-loop)',
+            'meanRMSE(open-loop)','meanBias(open-loop)','meanNSE(open-loop)',
+            'meanKGE(open-loop)','meanCC(open-loop)','meanBR(open-loop)','meanRV(open-loop)','meanKGED(open-loop)',
+            'maxRMSE(open-loop)','maxBias(open-loop)','maxNSE(open-loop)',
+            'maxKGE(open-loop)','maxCC(open-loop)','maxBR(open-loop)','maxRV(open-loop)','maxKGED(open-loop)']],on='ID')
+    df_.dropna(inplace=True)
+    df_['label']=[label]*len(df_)
+    # print ([label]*len(df_))
+    # df_["log(UPAREA)"]=np.log10(df["UPAREA"])
+    # print (df_.head())
+    # df["ELEVTN"]=[elevtn[iy,ix] for iy,ix in zip(df["IY1"].values,df["IX1"].values)]
+    if ii==0:
+        dfout=df_.copy()
+    else:
+        dfout=dfout.append(df_) #, ignore_index = True)
+    ii=ii+1
+    print (dfout.head()) #, len(dfout))#.head())
+    # dfout = pd.concat([dfout,df_], axis=0, ignore_index = True) #, sort=False)
 #===================
-dfout.dropna(axis=1,inplace=True)
-dfout["DA_method"]=[mth.split("_")[0] for mth in dfout['label']]
-dfout["Obs_type"]=[mth.split("_")[1] for mth in dfout['label']]
+# dfout.dropna(axis=1,inplace=True)
+dfout.dropna(axis='columns',how='any',inplace=True)
+print (dfout)
+# print (dfout.isna().any())
+
+dfout["BRopn[WSE]"]=1-np.abs(dfout["meanBR(open-loop)"]-1)
+
+# dfout["DA_method"]=[mth.split("_")[0] for mth in dfout['label']]
+# dfout["Obs_type"]=[mth.split("_")[1] for mth in dfout['label']]
+print ("#===================")
 print (dfout.head())
 #===================
 # colorbar
@@ -138,8 +170,41 @@ norm=BoundaryNorm(np.arange(0,20+0.1,1),cmap.N)
 #====================================================================
 va_margin= 0.0#1.38#inch 
 ho_margin= 0.0#1.18#inch
-hgt=(11.69 - 2*va_margin)*(2.0/5.0)
+hgt=(11.69 - 2*va_margin)*(1.0/3.0)
 wdt=(8.27 - 2*ho_margin)*(2.0/2.0)
+# fig, ax = plt.subplots(1, 1)
+# dfout_plot=dfout[dfout['label']=="DIR_All_Emp"] #.pivot_table(index="BRopn", columns="minKGED(open-loop)", values="rKGE", aggfunc='mean')
+# ax.scatter(dfout_plot['BRopn'].values, dfout_plot['minKGED(open-loop)'].values,c=dfout_plot['rKGE'].values, cmap="viridis_r")#, markersize=5)
+
+dfout_plot=dfout[dfout['label']=="NOM_All_Emp_050"] #.pivot_table(index="BRopn", columns="minKGED(open-loop)", values="rKGE", aggfunc='mean')
+fig=plt.figure(figsize=(wdt,hgt))
+G = gridspec.GridSpec(ncols=3, nrows=1)
+for i,met in enumerate(["minKGED(open-loop)","meanKGED(open-loop)","maxKGED(open-loop)"]):
+    ax=plt.subplot(G[0,i])
+    sns.scatterplot(data=dfout_plot, x="KGEopn", y=met, hue="rKGE", size="UPAREA",ax=ax, legend=None) #style="label",
+
+
+# ax.set_title("Scatter plot")
+# ax=sns.lmplot(data=dfout, x="meanRMSE(open-loop)",y="rKGE", hue="label",legend ="brief")
+
+# ax=sns.lmplot(data=dfout, x="BRopn",y="rKGE", hue="label",legend ="brief")
+
+# ax=sns.lmplot(data=dfout, x="meanCC(open-loop)",y="rKGE", hue="label",legend ="brief")
+# col="Obs_type",row="DA_method",legend ="brief")
+
+# ax=sns.lmplot(data=dfout, x="minKGED(open-loop)",y="rKGE", hue="label",legend ="brief")
+# dfout_plot=dfout[dfout['label']=="DIR_All_Emp"].pivot_table(index="BRopn", columns="minKGED(open-loop)", values="rKGE", aggfunc='mean')
+# ax=sns.heatmap(dfout_plot, cmap="crest")
+
+# dfout_plot=dfout[dfout['label']=="DIR_All_Emp"].pivot_table(index="BRopn", columns="minKGED(open-loop)", values="rKGE", aggfunc='mean')
+# x=dfout[dfout['label']=="DIR_All_Emp"]["BRopn"]
+# y
+# heatmap, xedges, yedges = np.histogram2d(x, y, bins=50)
+# extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+
+# plt.clf()
+# plt.imshow(heatmap.T, extent=extent, origin='lower')
+# plt.show()
 # hgt=wdt
 #fig=plt.figure(figsize=(8.27,11.69))
 # fig=plt.figure(figsize=(wdt,hgt))
@@ -148,7 +213,7 @@ wdt=(8.27 - 2*ho_margin)*(2.0/2.0)
 # ax=plt.subplot(G[0,0])
 # sns.regplot(data=dfout, x="ELEVTN",y="rKGE",hue="label",palette=cmap,legend ="brief",ax=ax)
 # ax=sns.lmplot(data=dfout, x="log(UPAREA)",y="rKGE",hue="label",legend ="brief") #palette=cmap,
-ax=sns.lmplot(data=dfout, x="log(UPAREA)",y="rKGE",col="Obs_type",row="DA_method",legend ="brief")
+# # ax=sns.lmplot(data=dfout, x="log(UPAREA)",y="rKGE",col="Obs_type",row="DA_method",legend ="brief")
 # sns.scatterplot(data=df, x="ELEVTN",y="rKGE",hue="log(UPAREA)",style="OBS AVAILABILITY",palette="viridis_r",legend ="brief",ax=ax)
 # sns.regplot(data=df, x="ELEVTN",y="rKGE",color="#8FA2B0",scatter="false",scatter_kws={'s':2},ax=ax)
 

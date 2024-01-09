@@ -69,8 +69,8 @@ def KGE(s,o):
     output:
         KGE: Kling Gupta Efficiency
     """
-    o=ma.masked_where(o<=0.0,o).filled(0.0)
-    s=ma.masked_where(o<=0.0,s).filled(0.0)
+    o=ma.masked_where(o==-9999.0,o).filled(0.0)
+    s=ma.masked_where(o==-9999.0,s).filled(0.0)
     o=np.compress(o>0.0,o)
     s=np.compress(o>0.0,s)
     s,o = filter_nan(s,o)
@@ -78,6 +78,25 @@ def KGE(s,o):
     y = (np.std(s) / np.mean(s)) / (np.std(o) / np.mean(o))
     r = np.corrcoef(o, s)[0,1]
     return 1 - np.sqrt((r - 1) ** 2 + (B - 1) ** 2 + (y - 1) ** 2)
+#========================================
+def KGED(s,o):
+    """
+	Kling Gupta Efficiency Deviation (Kling et al., 2012, http://dx.doi.org/10.1016/j.jhydrol.2012.01.011)
+	input:
+        s: simulated
+        o: observed
+    output:
+        KGE: Kling Gupta Efficiency
+    """
+    o=ma.masked_where(o==-9999.0,o).filled(0.0)
+    s=ma.masked_where(o==-9999.0,s).filled(0.0)
+    o=np.compress(o>0.0,o)
+    s=np.compress(o>0.0,s)
+    s,o = filter_nan(s,o)
+    B = np.mean(s) / np.mean(o)
+    y = (np.std(s) / np.mean(s)) / (np.std(o) / np.mean(o))
+    r = np.corrcoef(o, s)[0,1]
+    return 1 - np.sqrt((r - 1) ** 2 + (y - 1) ** 2)
 #========================================
 def KGE_components(s,o):
     """
@@ -88,8 +107,8 @@ def KGE_components(s,o):
     output:
         KGE: Kling Gupta Efficiency
     """
-    o=ma.masked_where(o<=0.0,o).filled(0.0)
-    s=ma.masked_where(o<=0.0,s).filled(0.0)
+    o=ma.masked_where(o==-9999.0,o).filled(0.0)
+    s=ma.masked_where(o==-9999.0,s).filled(0.0)
     o=np.compress(o>0.0,o)
     s=np.compress(o>0.0,s)
     s,o = filter_nan(s,o)
@@ -101,12 +120,12 @@ def KGE_components(s,o):
 #==========================================================
 def RMSE(s,o):
     """
-    Root Mean Squre Error
+    Root Mean Square Error
     input:
         s: simulated
         o: observed
     output:
-        RMSE: Root Mean Squre Error
+        RMSE: Root Mean Square Error
     """
     o=ma.masked_where(o==-9999.0,o).filled(0.0)
     s=ma.masked_where(o==-9999.0,s).filled(0.0)

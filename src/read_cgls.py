@@ -55,7 +55,8 @@ def cgls_continous_WSE(station,syear=2002,smon=10,sday=1,eyear=2020,emon=12,eday
     time=int((end-start).days + 1) # time in days
     data=np.ones([time],np.float32)*-9999.0 # WSE in [m] # -9999.0 for no observations
     # read CGLS
-    fname="/cluster/data6/menaka/CGLS/data/river/"+station+".json"
+    # fname="/cluster/data6/menaka/CGLS/data/river/"+station+".json"
+    fname="/work/a06/menaka/CGLS/data/river/"+station+".json"
     with open(fname) as f:
         alldata    = json.load(f)
         cgls_data  = alldata["data"]
@@ -72,7 +73,37 @@ def cgls_continous_WSE(station,syear=2002,smon=10,sday=1,eyear=2020,emon=12,eday
         if now > start and now < end:
             nowtime=int((now-start).days)
             data[nowtime]=wse+egm08-egm96
+            # print (wse+egm08-egm96)
     return data
+#####################################
+def cgls_WSE(station,syear,eyear,smon=1,emon=12,sday=1,eday=31):
+    start = datetime.date(syear, smon, sday)
+    end = datetime.date(eyear, emon, eday)
+    # time = (end - start).days + 1  # time in days
+    # data = np.full(time, -9999.0, dtype=np.float32)  # WSE in [m], -9999.0 for no observations
+
+    fname = "/work/a06/menaka/CGLS/data/river/" + station + ".json"
+    with open(fname) as f:
+        alldata = json.load(f)
+        cgls_data = alldata["data"]
+
+    date_format = "%Y/%m/%d"
+    # start_time = (start - datetime.date(2000, 1, 1)).days  # Start time relative to a reference date
+
+    # Create a DataFrame from cgls_data
+    df = pd.DataFrame(cgls_data)
+    df["datetime"] = pd.to_datetime(df["datetime"].str.split(" ").str[0], format=date_format)
+
+    # Filter and update data efficiently using DataFrame operations
+    mask = (df["datetime"] >= start) & (df["datetime"] <= end)
+    df_filtered = df[mask].copy()
+    df_filtered["days_from_start"] = (df_filtered["datetime"] - start).dt.days
+
+    # Separate data and time into arrays
+    time_array = df_filtered["days_from_start"].values
+    data_array = df_filtered["water_surface_height_above_reference_datum"].values #+ egm08 - egm96
+
+    return time_array, data_array
 #####################################
 def metadata():
     # directory 

@@ -8,7 +8,7 @@
 #PBS -m ea
 #PBS -M menaka@rainbow.iis.u-tokyo.ac.jp
 #PBS -V
-#PBS -N Figure06
+#PBS -N Figure05
 
 #source ~/.bashrc
 # import virtual environment
@@ -29,8 +29,8 @@ export OMP_NUM_THREADS=$NCPUS
 # cd "/cluster/data7/menaka/Reveletal2022"
 cd "/work/a06/menaka/Revel_2023_JAMES"
 
-mkdir -p figures
-mkdir -p data
+mkdir -p ./pdffigure
+# mkdir -p data
 
 #CaMA-Flood directory
 # CaMa_dir="/cluster/data6/menaka/CaMa-Flood_v396a_20200514"
@@ -45,7 +45,7 @@ smon=1
 sday=1
 
 # eyear, emon, eday
-eyear=2019
+eyear=2020
 emon=12
 eday=31
 
@@ -54,13 +54,10 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="fig06-rKGE_vs_var_char"
-
-expname="NOM_WSE_ERA5_CGLS_002"
-
+figname="d01-hydrograph_all"
 
 #*** 0. experiment list
-EXLIST="./Fig07-experiment_list.nam"
+EXLIST="./d01-experiment_list.nam"
 rm -r $EXLIST
 cat >> ${EXLIST} << EOF
 DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
@@ -85,7 +82,7 @@ EOF
 # NOM_ThnObs: NOM_WSE_ERA5_CGLS_003
 # EOF
 
-STLIST="./Fig07-station_list.nam"
+STLIST="./d01-station_list.nam"
 rm -r $STLIST
 cat >> ${STLIST} << EOF
 4120951 #YELLOWSTONE-BILLINGS,MT
@@ -104,8 +101,13 @@ EOF
 
 # NOM_ThnDam: NOM_WSE_ERA5_CGLS_004
 
-#
-echo python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
-python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+# 
+echo python src/hydrograph_pdf_all.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+python src/hydrograph_pdf_all.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
 
 wait
+
+rm -r $EXLIST
+rm -r $STLIST
+
+# conda deactivate

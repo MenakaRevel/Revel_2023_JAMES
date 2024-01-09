@@ -54,28 +54,27 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="fig06-rKGE_vs_var_char"
-
-expname="NOM_WSE_ERA5_CGLS_002"
-
+figname="fig07-rKGE_local_patch_char"
 
 #*** 0. experiment list
 EXLIST="./Fig07-experiment_list.nam"
 rm -r $EXLIST
 cat >> ${EXLIST} << EOF
-DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
-DIR_Thn_Emp:     DIR_WSE_ERA5_CGLS_002
-DIR_Thn_Emp_Dam: DIR_WSE_ERA5_CGLS_003
-DIR_Thn_Dst_Dam: DIR_WSE_ERA5_CGLS_007
-ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
-ANO_All_Emp_Dam: ANO_WSE_ERA5_CGLS_002
-ANO_Thn_Emp_Dam: ANO_WSE_ERA5_CGLS_004
-ANO_All_Dst_Dam: ANO_WSE_ERA5_CGLS_008
-NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
-NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
-NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
 NOM_All_Emp_050: NOM_WSE_ERA5_CGLS_062
 EOF
+
+# DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
+# DIR_Thn_Emp:     DIR_WSE_ERA5_CGLS_002
+# DIR_Thn_Emp_Dam: DIR_WSE_ERA5_CGLS_003
+# DIR_Thn_Dst_Dam: DIR_WSE_ERA5_CGLS_007
+# ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
+# ANO_All_Emp_Dam: ANO_WSE_ERA5_CGLS_002
+# ANO_Thn_Emp_Dam: ANO_WSE_ERA5_CGLS_004
+# ANO_All_Dst_Dam: ANO_WSE_ERA5_CGLS_008
+# NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
+# NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
+# NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
+
 ## NOM_All_Dst_Dam: NOM_WSE_ERA5_CGLS_008
 # EXLIST="./Fig01-experiment_list.nam"
 # rm -r $EXLIST
@@ -105,7 +104,15 @@ EOF
 # NOM_ThnDam: NOM_WSE_ERA5_CGLS_004
 
 #
-echo python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
-python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+# echo python src/metric_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+# python src/metric_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
 
+# open-loop local patch characteristics
+opnlist="./local_patch_char/open-loop_characteristics_wse.csv"
+
+echo python src/scatter_rKGE_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $figname $NCPUS # &
+python src/scatter_rKGE_local_patch_char.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $figname $NCPUS # &
+
+# rm -r $EXLIST
+# rm -r $STLIST
 wait

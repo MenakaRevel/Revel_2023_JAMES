@@ -5,6 +5,7 @@ Fig3: Boxplot to compare rKGE, rCC, rBR, and rRV for each experiment
 Fig4: Map of rKGE of best median rKGE experiment
 Fig5: Where rKGE is better uparea, elevation at the target pixel
 Fig6: local patch characteristics --> local patch size
+FIg7: local patch metircs --> wse open-loop
 open loop [WSE] --> mean RMSE, max RMSE, weighted RMSE (observation localization weight)
 open loop [WSE] --> bias
 open loop [Q] --> bias, cc, rv
