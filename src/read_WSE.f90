@@ -82,6 +82,7 @@ program read_wse
             eday=monthday(mon,isleap)
             do day=1, eday
                 write(yyyymmdd,'(i4.4,i2.2,i2.2)') year,mon,day
+                print*, yyyymmdd
                 do ens=1, ens_num
                     write(numch,'(i3.3)') ens
                     ! courrpted
@@ -129,7 +130,7 @@ program read_wse
     ! read(buffer(103:110),'(i7)') ix2
     ! read(buffer(111:118),'(i7)') iy2
     print*, trim(adjustl(station)), ix1, iy1
-    fout=trim(adjustl(outdir))//"/"//trim(expname)//"/wse"//"/"//trim(adjustl(station))//".txt"
+    fout=trim(adjustl(outdir))//"/"//trim(expname)//"/wse/"//trim(adjustl(station))//".txt"
     open(72,file=fout,status='replace')
     do i=1, N 
         write(72,'(a8,4x,f10.2,4x,f10.2)')daylist(i), asmout(i,ix1,iy1), opnout(i,ix1,iy1)

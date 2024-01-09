@@ -58,7 +58,54 @@ figname="fig06-rKGE_vs_var_char"
 
 expname="NOM_WSE_ERA5_CGLS_002"
 
-echo python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $expname $figname $NCPUS &
-python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $expname $figname $NCPUS &
+
+#*** 0. experiment list
+EXLIST="./Fig07-experiment_list.nam"
+rm -r $EXLIST
+cat >> ${EXLIST} << EOF
+DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
+DIR_Thn_Emp:     DIR_WSE_ERA5_CGLS_002
+DIR_Thn_Emp_Dam: DIR_WSE_ERA5_CGLS_003
+DIR_Thn_Dst_Dam: DIR_WSE_ERA5_CGLS_007
+ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
+ANO_All_Emp_Dam: ANO_WSE_ERA5_CGLS_002
+ANO_Thn_Emp_Dam: ANO_WSE_ERA5_CGLS_004
+ANO_All_Dst_Dam: ANO_WSE_ERA5_CGLS_008
+NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
+NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
+NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
+NOM_All_Emp_050: NOM_WSE_ERA5_CGLS_062
+EOF
+## NOM_All_Dst_Dam: NOM_WSE_ERA5_CGLS_008
+# EXLIST="./Fig01-experiment_list.nam"
+# rm -r $EXLIST
+# cat >> ${EXLIST} << EOF
+# NOM_AllObs: NOM_WSE_ERA5_CGLS_001
+# NOM_AllDam: NOM_WSE_ERA5_CGLS_002
+# NOM_ThnObs: NOM_WSE_ERA5_CGLS_003
+# EOF
+
+STLIST="./Fig07-station_list.nam"
+rm -r $STLIST
+cat >> ${STLIST} << EOF
+4120951 #YELLOWSTONE-BILLINGS,MT
+4120900 #MISSOURI-CULBERTSON,MT
+4121141 #CHEYENNE-NEAR PLAINVIEW
+4119450 #WISCONSIN-MUSCODA,WI
+4119650 #MISSISSIPPI-CLINTON,IA
+4119400 #ILLINOIS-VALLEY CITY
+4123300 #OHIO-LOUISVILLE,KY.
+4127503 #MISSISSIPPI-ST.LOUIS,MO
+4127800 #MISSISSIPPI-VICKSBURG,MS
+4125801 #ARKANSAS-ARKANSAS CITY
+4122700 #KANSAS-DESOTO,KANS.
+4121801 #MISSOURI-OMAHA,NE
+EOF
+
+# NOM_ThnDam: NOM_WSE_ERA5_CGLS_004
+
+#
+echo python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
+python src/scatter_rKGE_ua_elv.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $figname $NCPUS &
 
 wait

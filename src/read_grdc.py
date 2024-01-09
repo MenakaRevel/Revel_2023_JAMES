@@ -5,6 +5,7 @@ import re
 import shutil
 import os
 import datetime
+import pandas as pd
 #--
 #os.system("ln -sf ../params.py params.py")
 #shutil.copy("../gosh/params.py","params.py")
@@ -194,34 +195,44 @@ def get_station(gid,CaMa_dir="/cluster/data6/menaka/CaMa-Flood_v4",mapname="glb_
     
   return sname
 #--
-def get_loc_v394(gid,CaMa_dir="/cluster/data6/menaka/CaMa-Flood_v396a_20200514",mapname="glb_15min"):
-  #--ask the river name and a or b
-  # a - most downsream loc
-  # b - all locations  
-  #grdc = CaMa_dir + "/map/glb_15min/grdc_loc.txt"
-  #grdc = "../data/GRDC_alloc.txt"
-  # grdc = CaMa_dir + "/map/"+mapname+"/grdc_loc.txt"
-  # grdc = "/cluster/data6/menaka/HydroDA/dat/grdc_"+mapname+".txt"
-  #----
-  f = open(grdc,"r")
-  lines = f.readlines()
-  f.close()
+def get_loc_ixiy(gid,CaMa_dir="/cluster/data6/menaka/CaMa-Flood_v4",mapname="glb_15min"):
+  '''
+  get grdc location ix,iy coordinates
+  '''
   ix=0
   iy=0
   gid=int(gid)
-  #---
-  for line in lines[1::]:
-    line    = list(filter(None, re.split(" ",line)))
-    grdc_id = int(line[0])
-    u_info  = line[7]
+  grdc    = CaMa_dir+"/map/"+mapname+"/grdc_loc.txt"
+  df_grdc = pd.read_csv(grdc, sep=';')
+  df_grdc.rename(columns=lambda x: x.strip(), inplace=True)
+
+  return df_grdc[df_grdc['ID']==gid]['ix1'].values[0]-1,df_grdc[df_grdc['ID']==gid]['iy1'].values[0]-1
+  # # #--ask the river name and a or b
+  # # # a - most downstream loc
+  # # # b - all locations  
+  # # #grdc = CaMa_dir + "/map/glb_15min/grdc_loc.txt"
+  # # #grdc = "../data/GRDC_alloc.txt"
+  # # # grdc = CaMa_dir + "/map/"+mapname+"/grdc_loc.txt"
+  # # # grdc = "/cluster/data6/menaka/HydroDA/dat/grdc_"+mapname+".txt"
+  # # #----
+  # # with open(grdc,"r") as f:
+  # #   lines = f.readlines()
+  # # ix=0
+  # # iy=0
+  # # gid=int(gid)
+  # # #---
+  # # for line in lines[1::]:
+  # #   line    = list(filter(None, re.split(" ",line)))
+  # #   grdc_id = int(line[0])
+  # #   u_info  = line[7]
     
-    #--
-    if gid==grdc_id:
-      #print "get_loc_v394", grdc_id 
-      ix      = int(line[8])-1
-      iy      = int(line[9])-1
+  # #   #--
+  # #   if gid==grdc_id:
+  # #     #print "get_loc_v394", grdc_id 
+  # #     ix      = int(line[8])-1
+  # #     iy      = int(line[9])-1
   
-  return ix,iy
+  # # return ix,iy
 #--
 def get_grdc_loc_v396(name,CaMa_dir="/cluster/data6/menaka/CaMa-Flood_v396a_20200514",mapname="glb_15min"):
   #--ask the river name and a or b
@@ -368,8 +379,8 @@ def grdc_dis(grdc_id,syear=2000,eyear=2020,smon=1,emon=12,sday=1,eday=31):
   if not os.path.exists(grdc):
       return np.ones([last],np.float32)*-9999.0
   else:
-      # with open(grdc,"r",encoding='ISO-8859-1') as f: # for python3.8
-      with open(grdc,"r") as f: #  for python2.7 
+      with open(grdc,"r",encoding='ISO-8859-1') as f: # for python3.8
+      # with open(grdc,"r") as f: #  for python2.7 
         lines = f.readlines()
       dis = {}
       for line in lines[37::]:
