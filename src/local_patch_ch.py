@@ -10,7 +10,7 @@ import re
 import pandas as pd
 from multiprocessing import Pool, RawArray
 from statistics import *
-from read_CMF import read_discharge, read_discharge_multi
+# from read_CMF import read_discharge, read_discharge_multi
 import read_grdc as grdc
 
 #==============================================================================
@@ -28,6 +28,7 @@ CaMa_dir = argv[6]
 mapname = argv[7]
 outdir = argv[8]
 ncpus = int(argv[9])
+'''
 #==============================================================================
 # read grid info
 df = pd.read_csv(grdclist, sep=';',skipinitialspace = True)
@@ -66,6 +67,8 @@ print (dfvs.head())
 
 # patchtype="conus_06min_ERA5_60"
 # read local patch
+'''
+'''
 for i in range(len(dfgrdc)):
     ix0 = dfgrdc["IX1"][i]
     iy0 = dfgrdc["IY1"][i]
@@ -100,3 +103,39 @@ for i in range(len(dfgrdc)):
     dflp["vs"] = vs
     print (dflp) #.head())
     dflp.to_csv(outdir+"/"+re.split("/",patchdir)[-1]+"/"+str(dfgrdc["GRDC_ID"][i])+".txt", sep='\t', encoding='utf-8',index=False)
+'''
+#====================================================================
+grdc    = CaMa_dir+"/map/"+mapname+"/grdc_loc.txt"
+df_grdc = pd.read_csv(grdc, sep=';')
+df_grdc.rename(columns=lambda x: x.strip(), inplace=True)
+#====================================================================
+fcgls   = "/cluster/data6/menaka/HydroDA/dat/CGLS_alloc_conus_06min_org.txt"
+df_cgls = pd.read_csv(fcgls, sep='\s+')
+df_cgls.rename(columns=lambda x: x.strip(), inplace=True)
+#====================================================================
+for point in df_grdc.index[0::]:
+    print (df_grdc["ID"][point], df_grdc["Station"][point])
+    ix0=df_grdc['ix1'][point]
+    iy0=df_grdc['iy1'][point]
+    patchname = patchdir+"/patch%04d%04d.txt"%(ix0,iy0)
+    dflp = pd.read_csv(patchname, sep='\s+',skipinitialspace = True, header=None, names=['IX', 'IY', 'weight'])
+    #=====================================
+    # include vs inside local patch
+    vs= np.zeros([len(dflp)],dtype=object)
+    vs[:] = 'nan'
+    metricVals=[]
+    VS_count=0
+    for j in range(len(dflp)):
+        ix = dflp['IX'][j]
+        iy = dflp['IY'][j]
+        #==================================
+        if len(df_cgls[(df_cgls['ix']==ix) & (df_cgls['iy']==iy)].values)>0:
+            # print (dfvs["station"][(dfvs['ix']==ix) & (dfvs['iy']==iy)].values)
+            # vs[j]=dfvs[(dfvs['ix']==ix) & (dfvs['iy']==iy)]["station"].values[0]
+            # vs[j]=df_cgls.loc[(df_cgls['ix']==ix) & (df_cgls['iy']==iy),"ID"].values[0]
+            vs[j]=df_cgls.loc[(df_cgls['ix']==ix) & (df_cgls['iy']==iy),"station"].values[0]
+            print (ix,iy,df_cgls.loc[(df_cgls['ix']==ix) & (df_cgls['iy']==iy),['ix','iy']].values[0], df_cgls.loc[(df_cgls['ix']==ix) & (df_cgls['iy']==iy),"station"].values[0])
+        # dflp["vs"] = vs
+        # print (dflp) #.head())
+        # dflp.to_csv(outdir+"/"+re.split("/",patchdir)[-1]+"/"+str(df_grdc["ID"][point])+".txt", sep='\t', encoding='utf-8',index=False)
+    print ("="*20)

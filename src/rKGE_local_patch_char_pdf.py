@@ -18,6 +18,7 @@ import pandas as pd
 import string
 import matplotlib.pyplot as plt
 import seaborn as sns
+import warnings;warnings.filterwarnings('ignore')
 #====================================================================
 #====================================================================
 argv=sys.argv
@@ -178,7 +179,8 @@ wdt=(8.27 - 2*ho_margin)*(2.0/2.0)
 # dfout_plot=dfout[dfout['label']=="DIR_All_Emp"] #.pivot_table(index="BRopn", columns="minKGED(open-loop)", values="rKGE", aggfunc='mean')
 # ax.scatter(dfout_plot['BRopn'].values, dfout_plot['minKGED(open-loop)'].values,c=dfout_plot['rKGE'].values, cmap="viridis_r")#, markersize=5)
 
-pdfname = "./pdffigure/rKGE_local_patch_char_exp.pdf"
+# pdfname = "./pdffigure/rKGE_local_patch_char_exp.pdf"
+pdfname = "./pdffigure/"+figname+".pdf"
 with PdfPages(pdfname) as pdf:
     for label in labels:
         plt.close()
