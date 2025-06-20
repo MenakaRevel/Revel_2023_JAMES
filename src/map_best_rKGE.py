@@ -117,7 +117,7 @@ def plot_ax(lon1,lon2,lat1,lat2,width,colorVal,ax=None):
     ax=ax or plt.gca()
     return ax.plot([lon1,lon2],[lat1,lat2],color=colorVal,linewidth=width,zorder=105,alpha=alpha)
 #====================================================================
-def plot_hydrograph(num,grdcid,station,experiments,syear=2016,eyear=2019,ax=None,cmap='Set1'):
+def plot_hydrograph(num,grdcid,station,experiments,syear=2016,eyear=2019,ax=None):
     """
     Plot all the hydrographs of the all experimets
     """
@@ -126,8 +126,8 @@ def plot_hydrograph(num,grdcid,station,experiments,syear=2016,eyear=2019,ax=None
     start=0
     last=(end_dt-start_dt).days + 1
     # colorbar
-    cmap=plt.cm.get_cmap(cmap) #plt.cm.get_cmap("tab20c")
-    norm=BoundaryNorm(np.arange(0,9+0.1,1),cmap.N) #len(experiments)
+    cmap=plt.cm.get_cmap("tab20c")
+    norm=BoundaryNorm(np.arange(0,20+0.1,1),cmap.N) #len(experiments)
     ax=ax or plt.gca()
     # read grdc
     grdcid=int(grdcid)
@@ -306,8 +306,8 @@ satcov="./dat/satellite_coverage.bin"
 fname=CaMa_dir+"/map/"+mapname+"/1min/location.txt"
 with open(fname,"r") as f:
     lines=f.readlines()
-nXX = int(list(filter(None, re.split(" ",lines[2])))[6])
-nYY = int(list(filter(None, re.split(" ",lines[2])))[7])
+nXX = int(filter(None, re.split(" ",lines[2]))[6])
+nYY = int(filter(None, re.split(" ",lines[2]))[7])
 catmxy = CaMa_dir+"/map/"+mapname+"/1min/1min.catmxy.bin"
 catmxy = np.fromfile(catmxy,np.int16).reshape(2,nYY,nXX)
 #===================
@@ -354,9 +354,8 @@ w=0.002 #0.02
 alpha=1
 width=0.5
 # colorbar
-# cmap=plt.cm.get_cmap("tab20c")
-cmap=plt.cm.get_cmap("Set1")
-norm=BoundaryNorm(np.arange(0,9+0.1,1),cmap.N) #len(labels)
+cmap=plt.cm.get_cmap("tab20c")
+norm=BoundaryNorm(np.arange(0,20+0.1,1),cmap.N) #len(labels)
 #====================================================================
 va_margin= 0.0#1.38#inch 
 ho_margin= 0.0#1.18#inch
@@ -389,7 +388,6 @@ box="%f %f %f %f"%(lllon,urlon,urlat,lllat)
 os.system("./bin/txt_vector "+box+" "+CaMa_dir+" "+mapname+" > "+tmp0) 
 # map(vec_par,np.arange(1,10+1,1))
 map(vec_par,np.arange(2,10+1,1))
-# map(vec_par,np.arange(8,10+1,1))
 # Draw scatter plot
 x, y = m(dfout['LON'].values, dfout['LAT'].values)
 m.scatter(x,y,c=dfout["max_rKGE_int"], marker="o", cmap=cmap, norm=norm, alpha=1.0, zorder=110, s=12)
@@ -417,7 +415,7 @@ for num in range(len(grdcids)):
     #     y=0
     print (num,x,y,grdcid,dfout["max_rKGE"][dfout["GRDC_ID"]==grdcid].values[0])
     texts.append(ax0.text(x,y,"%s"%(string.ascii_lowercase[num]),fontsize=6, color='k',zorder=120)) #,transform=ax0.transAxes
-# adjust_text(texts,arrowprops=dict(arrowstyle="-", color='k', lw=0.5),ax=ax0)
+adjust_text(texts,arrowprops=dict(arrowstyle="-", color='k', lw=0.5),ax=ax0)
 #   ax0.annotate("%s"%(string.ascii_lowercase[num]), xy=(x, y), xytext=(x, y),xycoords='data', textcoords='data', fontsize=6, color='k',zorder=120)
 # title
 ax0.text(0.05,1.10,"m)",ha="left",va="center",transform=ax0.transAxes,fontsize=6)
@@ -440,8 +438,8 @@ for point in range(len(grdcids)):
     expname=experiments[expnum]
     print (point,grdcid,station,expnum,expname, exp,rKGE)
     ax=plt.subplot(G[ilist[point],jlist[point]])
-    plot_hydrograph(point,grdcid,station,experiments,syear=syear,eyear=eyear,ax=ax)
-    # plot_best_hydrograph(point,grdcid,station,expnum,expname,syear=syear,eyear=eyear,ax=ax)
+    # plot_hydrograph(point,grdcid,station,experiments,syear=syear,eyear=eyear,ax=ax)
+    plot_best_hydrograph(point,grdcid,station,expnum,expname,syear=syear,eyear=eyear,ax=ax)
 #==============================================================================
 # plt.tight_layout()
 plt.subplots_adjust(top=1.0,hspace=0.25,wspace=0.25)

@@ -1,14 +1,14 @@
 #! /bin/bash
 
 ### SET "mool PBS" @ IIS U-Tokyo
-#PBS -q F20
-#PBS -l select=1:ncpus=20:mem=10gb
+#PBS -q E10
+#PBS -l select=1:ncpus=10:mem=10gb
 #PBS -l place=scatter
 #PBS -j oe
 #PBS -m ea
 #PBS -M menaka@rainbow.iis.u-tokyo.ac.jp
 #PBS -V
-#PBS -N d03
+#PBS -N Figure06
 
 #source ~/.bashrc
 # import virtual environment
@@ -18,15 +18,10 @@
 # source activate py38
 # source activate pydef
 
-# conda init
-
-# conda activate pydef
-
 which python
 
-
 # OMP Settings
-NCPUS=20
+NCPUS=10
 export OMP_NUM_THREADS=$NCPUS
 
 # got to working dirctory
@@ -59,7 +54,7 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="d03-DA_charterisitics_20240506"
+figname="d03-DA_charterisitics"
 
 #*** 0. experiment list
 EXLIST="./d03-experiment_list.nam"
@@ -114,14 +109,9 @@ EOF
 # open-loop local patch characteristics
 opnlist="./local_patch_char/open-loop_characteristics_wse.csv"
 
-# dam-grdc list
-damlist="./physical_char/dam_grdc_list.txt"
-
-echo python src/DA_all_characteritics_pdf.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $damlist $figname $NCPUS # &
-python src/DA_all_characteritics_pdf.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $damlist $figname $NCPUS # &
+echo python src/DA_all_characteritics_pdf.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $figname $NCPUS # &
+python src/DA_all_characteritics_pdf.py $syear $eyear $CaMa_dir $mapname $EXLIST $STLIST $opnlist $figname $NCPUS # &
 
 # rm -r $EXLIST
 # rm -r $STLIST
 wait
-
-# conda deactivate

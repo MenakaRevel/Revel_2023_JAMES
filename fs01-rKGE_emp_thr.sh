@@ -53,31 +53,21 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="figs1-rKGE_boxplot_threshold_20240704"
+figname="figs1-rKGE_boxplot_threshold_20230804"
 
 #*** 0. experiment list
 EXLIST="./Figs1-experiment_list.nam"
 rm -r $EXLIST
 cat >> ${EXLIST} << EOF
-ANO_CaMaDam_LP_1: ANO_WSE_ERA5_CGLS_081
-ANO_CaMaDam_LP_2: ANO_WSE_ERA5_CGLS_082
-ANO_CaMaDam_LP_3: ANO_WSE_ERA5_CGLS_083
-ANO_CaMaDam_LP_4: ANO_WSE_ERA5_CGLS_084
+NOM_All_Emp_020: NOM_WSE_ERA5_CGLS_041
+NOM_All_Emp_040: NOM_WSE_ERA5_CGLS_042
+NOM_All_Emp_060: NOM_WSE_ERA5_CGLS_043
+NOM_All_Emp_080: NOM_WSE_ERA5_CGLS_044
 EOF
 
-# #*** 0. experiment list
-# EXLIST="./Figs1-experiment_list.nam"
-# rm -r $EXLIST
-# cat >> ${EXLIST} << EOF
-# NOM_All_Emp_020: NOM_WSE_ERA5_CGLS_041
-# NOM_All_Emp_040: NOM_WSE_ERA5_CGLS_042
-# NOM_All_Emp_060: NOM_WSE_ERA5_CGLS_043
-# NOM_All_Emp_080: NOM_WSE_ERA5_CGLS_044
-# EOF
-
 # NOM_All_Emp_060Dam: NOM_WSE_ERA5_CGLS_002
-echo python src/localization_sensitivity_physical_para.py $syear $eyear $CaMa_dir $mapname $EXLIST $figname $NCPUS
-python src/localization_sensitivity_physical_para.py $syear $eyear $CaMa_dir $mapname $EXLIST $figname $NCPUS &
+
+python src/localization_sensitivity.py $syear $eyear $CaMa_dir $mapname $EXLIST $figname $NCPUS &
 
 wait
 

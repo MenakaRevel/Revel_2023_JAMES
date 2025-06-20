@@ -127,9 +127,6 @@ NOM_All_Emp_060_050: NOM_WSE_ERA5_CGLS_072 - 50 ensembles (keep the openloop fil
 
 ## --> **** {Does the ensemble size is not large enough to have give a difference in DA improvement ??? }
 
-2024/03/31
--- Do a 100 ensemble DA
-
 
 --> use the data at: /home/yamadai/data/Runoff/VIC_BC_day
 dimensions:
@@ -146,16 +143,9 @@ nc0=xr.open_dataset("RUNOFF_2019.nc", chunks={'time':1})
 ==> as ERA5 WSE has large bias than the VIC BC according to Xudong Benchmarking system.
 
 
-# VIC BC Experiments [Not done]
+# VIC BC Experiments
 ## 1. Sensitivity of ensemble size
 NOM_All_Emp_080_020: NOM_WSE_VICBC_CGLS_011
 NOM_All_Emp_080_050: NOM_WSE_VICBC_CGLS_012
 NOM_All_Emp_080_100: NOM_WSE_VICBC_CGLS_013
 NOM_All_Emp_080_1000: NOM_WSE_VICBC_CGLS_014
-
-# New Experiments ==> Dam Simulation based EmpLP
-ANO_WSE_CGLS_081: Dam based EmpLP w/o dam statistic  
-ANO_WSE_CGLS_082: Dam based EmpLP w/ dam statistic
-ANO_WSE_CGLS_083: Dam based EmpLP w/ dam statistic w/ dam open-loop
-ANO_WSE_CGLS_084: Dam based EmpLP w/o dam statistic w/ dam open-loop
- 

@@ -40,7 +40,7 @@ CaMa_dir="/cluster/data6/menaka/CaMa-Flood_v4"
 mapname="conus_06min"
 
 # syear, smon, sday
-syear=2017
+syear=2016
 smon=1
 sday=1
 
@@ -61,27 +61,18 @@ EXLIST="./Fig05-experiment_list.nam"
 rm -r $EXLIST
 cat >> ${EXLIST} << EOF
 DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
+DIR_Thn_Emp:     DIR_WSE_ERA5_CGLS_002
+DIR_Thn_Emp_Dam: DIR_WSE_ERA5_CGLS_003
+DIR_Thn_Dst_Dam: DIR_WSE_ERA5_CGLS_007
 ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
+ANO_All_Emp_Dam: ANO_WSE_ERA5_CGLS_002
+ANO_Thn_Emp_Dam: ANO_WSE_ERA5_CGLS_004
+ANO_All_Dst_Dam: ANO_WSE_ERA5_CGLS_008
 NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
+NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
+NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
+NOM_All_Emp_050: NOM_WSE_ERA5_CGLS_062
 EOF
-
-# #*** 0. experiment list
-# EXLIST="./Fig05-experiment_list.nam"
-# rm -r $EXLIST
-# cat >> ${EXLIST} << EOF
-# DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
-# DIR_Thn_Emp:     DIR_WSE_ERA5_CGLS_002
-# DIR_Thn_Emp_Dam: DIR_WSE_ERA5_CGLS_003
-# DIR_Thn_Dst_Dam: DIR_WSE_ERA5_CGLS_007
-# ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
-# ANO_All_Emp_Dam: ANO_WSE_ERA5_CGLS_002
-# ANO_Thn_Emp_Dam: ANO_WSE_ERA5_CGLS_004
-# ANO_All_Dst_Dam: ANO_WSE_ERA5_CGLS_008
-# NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
-# NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
-# NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
-# NOM_All_Emp_050: NOM_WSE_ERA5_CGLS_062
-# EOF
 ## NOM_All_Dst_Dam: NOM_WSE_ERA5_CGLS_008
 # EXLIST="./Fig01-experiment_list.nam"
 # rm -r $EXLIST

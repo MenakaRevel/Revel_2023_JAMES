@@ -8,14 +8,12 @@ Create pdf file with all the characteristics with DA performance
 import numpy as np
 from numpy import ma
 import sys
+import matplotlib.pyplot as plt
 import datetime
 import math
-import matplotlib
-matplotlib.use('pdf')
-import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm,Normalize,ListedColormap,BoundaryNorm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-# from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.cm as cm
 import matplotlib.gridspec as gridspec
@@ -26,45 +24,12 @@ import pandas as pd
 import string
 import matplotlib.pyplot as plt
 import seaborn as sns
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import cartopy.io.img_tiles as cimgt
 import warnings;warnings.filterwarnings('ignore')
 #====================================================================
 sys.path.append('./src')
 # import params as pm
 import read_grdc as grdc
 import read_cgls as cgls
-#====================================================================
-import six
-from PIL import Image
-from owslib.wmts import WebMapTileService
-#====================================================================
-# URL of NASA GIBS
-# URL = 'http://gibs.earthdata.nasa.gov/wmts/epsg4326/best/wmts.cgi'
-# wmts = WebMapTileService(URL)
-# Layers for MODIS true color and snow RGB
-layers = ['MODIS_Terra_SurfaceReflectance_Bands143',
-           'MODIS_Terra_CorrectedReflectance_Bands367']
-url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}.jpg'
-#====================================================================
-def new_get_image(self, tile):
-    if six.PY3:
-        from urllib.request import urlopen, Request
-    else:
-        from urllib2 import urlopen
-    url = self._image_url(tile)  # added by H.C. Winsemius
-    req = Request(url) # added by H.C. Winsemius
-    req.add_header('User-agent', 'your bot 0.1')
-    # fh = urlopen(url)  # removed by H.C. Winsemius
-    fh = urlopen(req)
-    im_data = six.BytesIO(fh.read())
-    fh.close()
-    img = Image.open(im_data)
-
-    img = img.convert(self.desired_tile_form)
-
-    return img, self.tileextent(tile), 'lower'
 #=========================================
 def round_half_up(n, decimals=0):
     multiplier = 10 ** decimals
@@ -176,9 +141,8 @@ mapname=argv[4]
 exlist=argv[5]
 stlist=argv[6]
 opnlist=argv[7]
-damlist=argv[8]
-figname=argv[9]
-ncpus=int(sys.argv[10])
+figname=argv[8]
+ncpus=int(sys.argv[9])
 ens_mem=49
 seaborn_map=True
 # seaborn_map=False
@@ -314,58 +278,34 @@ num_thr=1
 # # dfout["Obs_type"]=[mth.split("_")[1] for mth in dfout['label']]
 # print ("#===================")
 # print (dfout.head())
-#===================
-# damlist
-dfdam=pd.read_csv(damlist)
-dfdam.set_index('grdcID',inplace=True)
-print ('Dam-GRDC list')
-print (dfdam.head())
+
 #===================
 dfopnl_wse=pd.read_csv(opnlist, sep=';')
 dfopnl_wse.rename(columns=lambda x: x.strip())
 # dfopnl.set_index('ID',inplace=True)
-# dfopnl_wse.set_index('ID',inplace=True)
+dfopnl_wse.set_index('ID',inplace=True)
 print ('Open-loop WSE')
-print (len(dfopnl_wse))
 print (dfopnl_wse.head())
-print (dfopnl_wse.columns)
 
 #===================
 opnlist_dis="./out/"+experiments[0]+"/datafile.csv"
 dfopnl_dis=pd.read_csv(opnlist_dis, sep=';')
 dfopnl_dis.rename(columns=lambda x: x.strip())
-# print (dfopnl_dis.head())
-
-# print (dfopnl_dis.columns)
-# dfopnl.set_index('ID',inplace=True)
-dfopnl_dis=dfopnl_dis.loc[:,['GRDC_ID','RIVER', 'STATION','IX1','IY1','IX2','IY2','LON',
-'LAT','OBS AVAILABILITY','KGEopn','CCopn','BRopn','RVopn','NSEasm','NSEopn',
-'NRMSEopn','RIV_WTH','UPAREA','RIVNUM','SAT_COV','ELEV']]
-dfopnl_dis.rename(columns=lambda x: x.strip())
-dfopnl_dis.rename(columns={'GRDC_ID':'ID'}, inplace=True)
-
-# dfopnl_dis.set_index('ID',inplace=True)
-# dfopnl_dis.index.astype(dfopnl_wse.index.dtypes.to_dict())
-print ('Open-loop DIS')
-print (len(dfopnl_dis))
 print (dfopnl_dis.head())
 print (dfopnl_dis.columns)
+# dfopnl.set_index('ID',inplace=True)
+dfopnl_dis=dfopnl_dis.loc[:,['GRDC_ID','IX1','IY1','IX2','IY2','LON',
+'LAT','OBS AVAILABILITY','KGEopn','CCopn','BRopn','RVopn','NSEasm','NSEopn',
+'NRMSEopn','RIV_WTH','UPAREA','RIVNUM','SAT_COV','ELEV']]
+dfopnl_dis.rename(columns={'GRDC_ID':'ID'}, inplace=True)
+dfopnl_dis.set_index('ID',inplace=True)
+# dfopnl_dis.index.astype(dfopnl_wse.index.dtypes.to_dict())
+print ('Open-loop DIS')
+print (dfopnl_dis.head())
 
-dfout=pd.merge(dfopnl_dis,dfopnl_wse,how='outer',on='ID')
-dfout.set_index('ID',inplace=True)
-# dfout.dropna(inplace=True)
+dfout=pd.merge(dfopnl_wse,dfopnl_dis,on='ID')
+dfout.dropna(inplace=True)
 
-# read one datafile
-dfname="./out/"+experiments[0]+"/datafile.csv"
-# print (dfname)
-dfexp = pd.read_csv(dfname, sep=';')
-dfexp.rename(columns={'GRDC_ID':'ID'}, inplace=True)
-dfexp.set_index('ID',inplace=True)
-
-dfout=dfout[dfout.index.isin(dfexp.index)]
-
-print ('dfout')
-print (len(dfout))
 print (dfout.head())
 
 for exp,label in zip(experiments,labels):
@@ -375,17 +315,11 @@ for exp,label in zip(experiments,labels):
     df = pd.read_csv(dfname, sep=';')
     # print (df.head())
     # print (df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rKGE"])
-    # dfout[label+"_KGE"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["KGEasm"].values
-    # dfout[label+"_rKGE"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rKGE"].values
-    # dfout[label+"_rBR"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rBR"].values
-    # dfout[label+"_rCC"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rCC"].values
-    # dfout[label+"_rRV"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rRV"].values
-
-    dfout[label+"_KGE"]=df["KGEasm"].values
-    dfout[label+"_rKGE"]=df["rKGE"].values
-    dfout[label+"_rBR"]=df["rBR"].values
-    dfout[label+"_rCC"]=df["rCC"].values
-    dfout[label+"_rRV"]=df["rRV"].values
+    dfout[label+"_KGE"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["KGEasm"].values
+    dfout[label+"_rKGE"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rKGE"].values
+    dfout[label+"_rBR"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rBR"].values
+    dfout[label+"_rCC"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rCC"].values
+    dfout[label+"_rRV"]=df[df['GRDC_ID'].isin(dfopnl_wse.index)]["rRV"].values
 #==========================================
 # dfout = dfout.loc[(dfout["SAT_COV"]==1.0) & (dfout["UPAREA"]>=upa_thr) & (dfout["RIVNUM"]<=num_thr) & (dfout["RIVNUM"]<=7),:]
 # dfout["max_rKGE"]=dfout[labels].idxmax(axis=1)
@@ -404,12 +338,16 @@ for exp,label in zip(experiments,labels):
 # print ((dfout["max_rKGE"].value_counts()/float(len(dfout["max_rKGE"].values)))*100.0)
 
 dfout.rename(columns=lambda x: x.strip(), inplace=True)
+<<<<<<< HEAD
 dfout.fillna(-99.0, inplace=True)
 <<<<<<< HEAD
 # filter the data
 dfout=dfout.loc[(dfout["SAT_COV"]==1.0) & (dfout["UPAREA"]>=upa_thr) & (dfout["RIVNUM"]<=num_thr) & (dfout["RIVNUM"]<=7),:]
 =======
 >>>>>>> 752c81ba6ef1861a8a3efa9f1eea2b52a273daba
+=======
+
+>>>>>>> parent of f4b03cc... UPDATE: a lot updated
 print (dfout.head())
 print (dfout.columns)
 ################################
@@ -434,7 +372,7 @@ wdt=(8.27 - 2*ho_margin)*(2.0/2.0)
 dec=2
 val=0.20
 #====================================================================
-pdfname = "./pdffigure/"+figname+".pdf"
+pdfname = "./pdffigure/DA_characteristics.pdf"
 with PdfPages(pdfname) as pdf:
     # for label in labels:
     #     plt.close()
@@ -444,28 +382,20 @@ with PdfPages(pdfname) as pdf:
         lon = dfout['LON'][point]
         lat = dfout['LAT'][point]
         grdcid=point #dfout["GRDC_ID"][point]
-        # print (dfout["STATION"][point])
-        station=dfout["STATION"][point].strip()
-        river=dfout["RIVER"][point].strip()
+        station=dfout["Station"][point]
+        river=dfout["River"][point]
         uparea=dfout["UPAREA"][point]*1e-6
         elevtn=dfout["ELEV"][point]
         obsava=dfout["OBS AVAILABILITY"][point]
-        print (grdcid, station, river)
-        if int(grdcid) in dfdam.index.values:
-            # print ("dam")
-            damdist=dfdam.loc[grdcid,'Distance']
-        else:
-            damdist=-99.0
         fig=plt.figure(figsize=(wdt,hgt))
         G   = gridspec.GridSpec(ncols=3, nrows=4)
-        # ax1 = fig.add_subplot(G[0,0])
-        # Set up the cartopy map projection
-        ax1 = fig.add_subplot(G[0,0], projection=ccrs.PlateCarree())
-        # ax1.text(0.0,1.1,station+' - '+river,va="center",ha="left",transform=ax1.transAxes,fontsize=10)
+        ax1 = fig.add_subplot(G[0,0])
+        ax1.text(0.0,1.1,station+' - '+river,va="center",ha="left",transform=ax1.transAxes,fontsize=10)
         lllat = round_half_down(lat-val,dec)
         urlat = round_half_up(lat+val,dec)
         lllon = round_half_down(lon-val,dec)
         urlon = round_half_up(lon+val,dec)
+<<<<<<< HEAD
         ax1.set_extent([lllon, urlon, lllat, urlat])
         # cimgt.GoogleWTS.get_image = new_get_image
 <<<<<<< HEAD
@@ -499,6 +429,21 @@ with PdfPages(pdfname) as pdf:
         #     print ("Normal map")
         ax1.plot(lon ,lat ,color="r",marker="o",label="GRDC",markersize=7,linewidth=0,zorder=111,transform=ccrs.PlateCarree())
         # ax1.plot(lon ,lat ,color="r",marker="o",label="GRDC",markersize=7,linewidth=0,zorder=111) #fillstyle="none",
+=======
+        m = Basemap(projection='cyl',llcrnrlat=lllat,urcrnrlat=urlat,llcrnrlon=lllon,urcrnrlon=urlon, lat_ts=0,resolution='c',ax=ax1)
+        try:
+            # m.arcgisimage(service=maps[1], xpixels=1500, verbose=False)
+            m.arcgisimage(server='http://server.arcgisonline.com/ArcGIS', service='World_Imagery', xpixels=1000, ypixels=None, dpi=1200)
+            print ("ArcGIS map")
+        except:
+            # Draw some map elements on the map
+            m.drawcoastlines()
+            m.drawstates()
+            m.drawcountries()
+            # m.drawrivers(color='blue')
+            print ("Normal map")
+        ax1.plot(lon ,lat ,color="r",marker="o",label="GRDC",markersize=7,linewidth=0,zorder=111) #fillstyle="none",
+>>>>>>> parent of f4b03cc... UPDATE: a lot updated
         # add text 
         ax2 = fig.add_subplot(G[0,1::])
         # ax2.text(0.0,1.0,'River=%s'%(river),va="center",ha="left",transform=ax2.transAxes,fontsize=10)
@@ -506,7 +451,6 @@ with PdfPages(pdfname) as pdf:
         ax2.text(0.0,1.0,'Uparea=%.2E$km^2$'%(uparea),va="center",ha="left",transform=ax2.transAxes,fontsize=10)
         ax2.text(0.5,1.0,'Elevation=%6.2f$m$'%(elevtn),va="center",ha="left",transform=ax2.transAxes,fontsize=10)
         ax2.text(0.0,0.9,'Satellite Covered=%d'%(obsava),va="center",ha="left",transform=ax2.transAxes,fontsize=10)
-        ax2.text(0.5,0.9,'Upstream Dam=%5.2f$km$'%(damdist),va="center",ha="left",transform=ax2.transAxes,fontsize=10)
         # WSE realted
         ax2.text(0.5,0.8,'$KGED_{WSE}$(open-loop)=%3.2f,%3.2f,%3.2f'%(dfout["minKGED(open-loop)"][point],
         dfout["meanKGED(open-loop)"][point],dfout["maxKGED(open-loop)"][point])

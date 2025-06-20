@@ -319,11 +319,9 @@ def calc_metric(vslist,syear,eyear,egm08,egm96):
         # NSE
         nse=NSE(opn,org)
         # KGE, CC, BR, RV
-        # kge,cc,br,rv=KGE_components(opn,org)
-        kge,cc,br,rv=KGE_components_2009(opn,org)
+        kge,cc,br,rv=KGE_components(opn,org)
         # KGED
-        # kged=KGED(opn,org)
-        kged=KGED2009(opn,org)
+        kged=KGED(opn,org)
         # 
         metric.append([rmse,bias,nse,kge,cc,br,rv,kged])
     return np.array(metric)
@@ -443,7 +441,7 @@ df_cgls['KGED(open-loop)']=metric[:,7]
 print (df_cgls.head())
 print (df_cgls.columns)
 print ("*********")
-df_cgls.to_csv("./local_patch_char/open-loop_error_wse.csv",sep=',',index=False)
+df_cgls.to_csv("./local_patch_char/open-loop_error_wse.csv",sep=',')
 
 '''
 #=====

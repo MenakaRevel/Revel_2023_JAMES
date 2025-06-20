@@ -54,7 +54,7 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="d02-rKGE_local_patch_char_20240317"
+figname="d02-rKGE_local_patch_char"
 
 #*** 0. experiment list
 EXLIST="./d02-experiment_list.nam"

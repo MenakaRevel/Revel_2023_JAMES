@@ -50,7 +50,4 @@ grdclist="$CaMa_dir/map/$mapname/grdc_loc.txt"
 # Dam list
 damlist="/cluster/data6/menaka/Empirical_LocalPatch/dat/damloc_${mapname}.txt"
 
-outdir='./physical_char'
-mkdir -p $outdir
-
-python src/dam_grdc_list.py $damlist $grdclist $CaMa_dir $mapname $outdir
+python src/dam_grdc_list.py $grdclist $damlist $CaMa_dir $mapname
