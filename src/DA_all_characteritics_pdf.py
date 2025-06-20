@@ -405,8 +405,11 @@ for exp,label in zip(experiments,labels):
 
 dfout.rename(columns=lambda x: x.strip(), inplace=True)
 dfout.fillna(-99.0, inplace=True)
+<<<<<<< HEAD
 # filter the data
 dfout=dfout.loc[(dfout["SAT_COV"]==1.0) & (dfout["UPAREA"]>=upa_thr) & (dfout["RIVNUM"]<=num_thr) & (dfout["RIVNUM"]<=7),:]
+=======
+>>>>>>> 752c81ba6ef1861a8a3efa9f1eea2b52a273daba
 print (dfout.head())
 print (dfout.columns)
 ################################
@@ -436,7 +439,7 @@ with PdfPages(pdfname) as pdf:
     # for label in labels:
     #     plt.close()
     #     dfout_plot=dfout[dfout['label']==label] #.pivot_table(index="BRopn", columns="minKGED(open-loop)", values="rKGE", aggfunc='mean')
-    for point in dfout.index[0::]:
+    for point in dfout.index[0:1]:
         plt.close()
         lon = dfout['LON'][point]
         lat = dfout['LAT'][point]
@@ -465,10 +468,17 @@ with PdfPages(pdfname) as pdf:
         urlon = round_half_up(lon+val,dec)
         ax1.set_extent([lllon, urlon, lllat, urlat])
         # cimgt.GoogleWTS.get_image = new_get_image
+<<<<<<< HEAD
         background=cimgt.GoogleTiles(style='satellite') #,cache=True)
         # background=cimgt.GoogleTiles(url=url)
         ax1.add_image(background,15) #style='satellite'
         # ax1.stock_img()
+=======
+        # background=cimgt.GoogleTiles(style='satellite') #,cache=True)
+        # background=cimgt.GoogleTiles(url=url)
+        # ax1.add_image(background,15) #style='satellite'
+        ax1.stock_img()
+>>>>>>> 752c81ba6ef1861a8a3efa9f1eea2b52a273daba
         # ax.add_wmts(wmts, layers[0]) #, wmts_kwargs={'time': date_str})
         # Draw some map elements on the map
         ax1.coastlines(resolution='10m', linewidth=1)
