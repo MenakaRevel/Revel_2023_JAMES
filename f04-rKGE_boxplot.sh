@@ -39,12 +39,12 @@ CaMa_dir="/cluster/data6/menaka/CaMa-Flood_v4"
 mapname="conus_06min"
 
 # syear, smon, sday
-syear=2016
+syear=2017
 smon=1
 sday=1
 
 # eyear, emon, eday
-eyear=2020
+eyear=2019
 emon=12
 eday=31
 
@@ -53,26 +53,48 @@ eday=31
 # figname="fig-KGEAI_boxplot"
 # figname="fig07-rISS_boxplot"
 # figname="fig-DCORR_boxplot"
-figname="fig04-rKGE_boxplot_dist_ALL"
+# figname="fig04-rKGE_boxplot"
+figname="fig04-rKGE_boxplot_dam4"
 
 #*** 0. experiment list
 EXLIST="./Fig04-experiment_list.nam"
 rm -r $EXLIST
 cat >> ${EXLIST} << EOF
-DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
-DIR_Thn_Emp:     DIR_WSE_ERA5_CGLS_002
-DIR_Thn_Emp_Dam: DIR_WSE_ERA5_CGLS_003
-DIR_Thn_Dst_Dam: DIR_WSE_ERA5_CGLS_007
-ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
-ANO_All_Emp_Dam: ANO_WSE_ERA5_CGLS_002
-ANO_Thn_Emp_Dam: ANO_WSE_ERA5_CGLS_008
-ANO_All_Dst_Dam: ANO_WSE_ERA5_CGLS_008
-NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
-NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
-NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
-NOM_All_Dst_Dam: NOM_WSE_ERA5_CGLS_008
+ANO_CaMaDam_LP 1: ANO_WSE_ERA5_CGLS_081
+ANO_CaMaDam_LP 2: ANO_WSE_ERA5_CGLS_082
+ANO_CaMaDam_LP 3: ANO_WSE_ERA5_CGLS_083
+ANO_CaMaDam_LP 4: ANO_WSE_ERA5_CGLS_084
 EOF
 
+# #*** 0. experiment list
+# EXLIST="./Fig04-experiment_list.nam"
+# rm -r $EXLIST
+# cat >> ${EXLIST} << EOF
+# DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
+# ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
+# NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
+# ANO_All_Dam1:     ANO_WSE_ERA5_CGLS_081
+# ANO_All_Dam2:     ANO_WSE_ERA5_CGLS_082
+# ANO_All_Dam3:     ANO_WSE_ERA5_CGLS_083
+# EOF
+
+# #*** 0. experiment list
+# EXLIST="./Fig04-experiment_list.nam"
+# rm -r $EXLIST
+# cat >> ${EXLIST} << EOF
+# DIR_All_Emp:     DIR_WSE_ERA5_CGLS_001
+# DIR_Thn_Emp:     DIR_WSE_ERA5_CGLS_002
+# DIR_Thn_Emp_Dam: DIR_WSE_ERA5_CGLS_003
+# DIR_Thn_Dst_Dam: DIR_WSE_ERA5_CGLS_007
+# ANO_All_Emp:     ANO_WSE_ERA5_CGLS_001
+# ANO_All_Emp_Dam: ANO_WSE_ERA5_CGLS_002
+# ANO_Thn_Emp_Dam: ANO_WSE_ERA5_CGLS_008
+# ANO_All_Dst_Dam: ANO_WSE_ERA5_CGLS_008
+# NOM_All_Emp:     NOM_WSE_ERA5_CGLS_001
+# NOM_All_Emp_Dam: NOM_WSE_ERA5_CGLS_002
+# NOM_Thn_Emp:     NOM_WSE_ERA5_CGLS_003
+# NOM_All_Dst_Dam: NOM_WSE_ERA5_CGLS_008
+# EOF
 #DIR_AllEmpDam: DIR_WSE_ERA5_CGLS_004
 # EXLIST="./Fig01-experiment_list.nam"
 # rm -r $EXLIST

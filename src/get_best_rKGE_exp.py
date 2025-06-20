@@ -1,7 +1,7 @@
 #!/opt/local/bin/python
 # -*- coding: utf-8 -*-
 '''
-map of rKGE - relative KGE values
+get best rKGE (maximum) grdc id
 '''
 
 import numpy as np
@@ -33,7 +33,7 @@ import math
 import os
 import seaborn as sns
 import pandas as pd
-from adjustText import adjust_text
+# from adjustText import adjust_text
 import warnings;warnings.filterwarnings('ignore')
 
 # import params as pm
@@ -117,7 +117,7 @@ def plot_ax(lon1,lon2,lat1,lat2,width,colorVal,ax=None):
     ax=ax or plt.gca()
     return ax.plot([lon1,lon2],[lat1,lat2],color=colorVal,linewidth=width,zorder=105,alpha=alpha)
 #====================================================================
-def plot_hydrograph(num,grdcid,station,experiments,syear=2016,eyear=2019,ax=None,cmap='Set1'):
+def plot_hydrograph(num,grdcid,station,experiments,syear=2016,eyear=2019,ax=None):
     """
     Plot all the hydrographs of the all experimets
     """
@@ -126,8 +126,8 @@ def plot_hydrograph(num,grdcid,station,experiments,syear=2016,eyear=2019,ax=None
     start=0
     last=(end_dt-start_dt).days + 1
     # colorbar
-    cmap=plt.cm.get_cmap(cmap) #plt.cm.get_cmap("tab20c")
-    norm=BoundaryNorm(np.arange(0,9+0.1,1),cmap.N) #len(experiments)
+    cmap=plt.cm.get_cmap("tab20c")
+    norm=BoundaryNorm(np.arange(0,20+0.1,1),cmap.N) #len(experiments)
     ax=ax or plt.gca()
     # read grdc
     grdcid=int(grdcid)
@@ -327,144 +327,7 @@ for exp,label in zip(experiments,labels):
     dfname="./out/"+exp+"/datafile.csv"
     # print (dfname)
     df = pd.read_csv(dfname, sep=';')
-    print (df.head())
-    dfout[label]=df["rKGE"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]
-    # dfrCC[label]=df["rCC"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr)]
-    # dfrBR[label]=df["rBR"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr)]
-    # dfrRV[label]=df["rRV"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr)]
-    # print (df["rKGE"].values)
-dfout["max_rKGE"]=dfout.idxmax(axis=1)
-dfout["max_rKGE_int"]=dfout["max_rKGE"] #pd.Categorical(dfout["max_rKGE"]).codes
-dfout["max_rKGE_int"].replace(labels,range(len(labels)),inplace=True)
-# add lon lat
-dfout["LON"]=df["LON"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]
-dfout["LAT"]=df["LAT"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]
-dfout["GRDC_ID"]=df["GRDC_ID"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]
-dfout["RIVER"]=df["RIVER"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]
-dfout["STATION"]=df["STATION"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]
-print (dfout.head())
-#
-print (dfout["max_rKGE"].value_counts())
-print (len(dfout["max_rKGE"].values))
-print ((dfout["max_rKGE"].value_counts()/float(len(dfout["max_rKGE"].values)))*100.0)
-################################
-# river width
-sup=3 #2
-w=0.002 #0.02
-alpha=1
-width=0.5
-# colorbar
-# cmap=plt.cm.get_cmap("tab20c")
-cmap=plt.cm.get_cmap("Set1")
-norm=BoundaryNorm(np.arange(0,9+0.1,1),cmap.N) #len(labels)
-#====================================================================
-va_margin= 0.0#1.38#inch 
-ho_margin= 0.0#1.18#inch
-hgt=(11.69 - 2*va_margin)*(2.0/5.0)
-wdt=(8.27 - 2*ho_margin)*(2.0/2.0)
-# hgt=wdt
-#fig=plt.figure(figsize=(8.27,11.69))
-fig=plt.figure(figsize=(wdt,hgt))
-#fig.suptitle("auto-correalated area")#"maximum autocorrelation length")
-G = gridspec.GridSpec(ncols=4, nrows=4)
-ax0=plt.subplot(G[1:3,1:3])
-# Create a new map
-lllon,urlon,lllat,urlat=-115,-75,29,51
-m = Basemap(projection='cyl', lat_0=0, lon_0=0,
-            resolution='l', area_thresh=1000.0,
-            llcrnrlon=lllon, llcrnrlat=lllat,
-            urcrnrlon=urlon, urcrnrlat=urlat,
-            ax=ax0)
-m.readshapefile('./dat/MISSISSIPPI/MISSISSIPPI', 'MISSISSIPPI', drawbounds = False)
-for info, shape in zip(m.MISSISSIPPI, m.MISSISSIPPI):
-    # if info['nombre'] == 'Amazon_boundry':
-    x, y = zip(*shape) 
-    m.plot(x, y, marker=None,color='k',linewidth=1.0)
-# Draw the coastlines and country borders
-# m.drawcoastlines()
-# m.drawcountries()
-# draw river
-tmp0=re.split("-",figname)[0]+".txt"
-box="%f %f %f %f"%(lllon,urlon,urlat,lllat) 
-os.system("./bin/txt_vector "+box+" "+CaMa_dir+" "+mapname+" > "+tmp0) 
-# map(vec_par,np.arange(1,10+1,1))
-map(vec_par,np.arange(2,10+1,1))
-# map(vec_par,np.arange(8,10+1,1))
-# Draw scatter plot
-x, y = m(dfout['LON'].values, dfout['LAT'].values)
-m.scatter(x,y,c=dfout["max_rKGE_int"], marker="o", cmap=cmap, norm=norm, alpha=1.0, zorder=110, s=12)
-# annotete grdcid
-# texts=[ax0.text(dfout["LON"].values[i],dfout["LAT"].values[i],dfout["GRDC_ID"].values[i], transform=ax0.transAxes,fontsize=6, color='k',zorder=120) for i in range(len(dfout["GRDC_ID"].values))]
-# adjust_text(texts,arrowprops=dict(arrowstyle="-", color='k', lw=0.5))
-# annotate hydrograph points
-texts=[]
-# # # for i in range(len(dfout["GRDC_ID"].values)):
-# # #     x=dfout["LON"].values[i]
-# # #     y=dfout["LAT"].values[i]
-# # #     # texts.append(ax0.text(x,y,"%d"%(dfout["GRDC_ID"].values[i]), transform=ax0.transAxes,fontsize=4))
-# # #     texts.append(ax0.annotate(dfout["GRDC_ID"].values[i],xy=(x, y), xytext=(x, y),xycoords='data', textcoords='data', fontsize=4, color='k',zorder=120))
-# # # adjust_text(texts,arrowprops=dict(arrowstyle="-", color='k', lw=0.5))
-# annonate
-for num in range(len(grdcids)):
-    grdcid=grdcids[num]
-    x=dfout["LON"][dfout["GRDC_ID"]==grdcid].values[0]
-    y=dfout["LAT"][dfout["GRDC_ID"]==grdcid].values[0]
-    # try:
-    #     x=dfout["LON"][dfout["GRDC_ID"]==grdcid].values[0]
-    #     y=dfout["LAT"][dfout["GRDC_ID"]==grdcid].values[0]
-    # except:
-    #     x=0
-    #     y=0
-    print (num,x,y,grdcid,dfout["max_rKGE"][dfout["GRDC_ID"]==grdcid].values[0])
-    texts.append(ax0.text(x,y,"%s"%(string.ascii_lowercase[num]),fontsize=6, color='k',zorder=120)) #,transform=ax0.transAxes
-# adjust_text(texts,arrowprops=dict(arrowstyle="-", color='k', lw=0.5),ax=ax0)
-#   ax0.annotate("%s"%(string.ascii_lowercase[num]), xy=(x, y), xytext=(x, y),xycoords='data', textcoords='data', fontsize=6, color='k',zorder=120)
-# title
-ax0.text(0.05,1.10,"m)",ha="left",va="center",transform=ax0.transAxes,fontsize=6)
-#======================
-ax0.spines['top'].set_visible(False)
-ax0.spines['right'].set_visible(False)
-ax0.spines['bottom'].set_visible(False)
-ax0.spines['left'].set_visible(False)
-#==============================================================================
-# plot hydrographs
-ilist=[0,0,0,0,1,2,3,3,3,3,2,1]
-jlist=[0,1,2,3,3,3,3,2,1,0,0,0]
-for point in range(len(grdcids)):
-    grdcid=grdcids[point]
-    station=stations[point]
-    # print (dfout["max_rKGE"][dfout["GRDC_ID"]==grdcid].values[0])
-    expnum=dfout["max_rKGE_int"][dfout["GRDC_ID"]==grdcid].values[0]
-    exp=dfout["max_rKGE"][dfout["GRDC_ID"]==grdcid].values[0]
-    rKGE=dfout[exp][dfout["GRDC_ID"]==grdcid].values[0]
-    expname=experiments[expnum]
-    print (point,grdcid,station,expnum,expname, exp,rKGE)
-    ax=plt.subplot(G[ilist[point],jlist[point]])
-    plot_hydrograph(point,grdcid,station,experiments,syear=syear,eyear=eyear,ax=ax)
-    # plot_best_hydrograph(point,grdcid,station,expnum,expname,syear=syear,eyear=eyear,ax=ax)
-#==============================================================================
-# plt.tight_layout()
-plt.subplots_adjust(top=1.0,hspace=0.25,wspace=0.25)
-#======================
-# legend 
-features=[]
-pnum=len(labels)
-for i in np.arange(pnum):
-    label=labels[i]
-    features.append(mlines.Line2D([], [], color=cmap(norm(i)), marker="o",
-                          markeredgecolor="none",markersize=5, markeredgewidth=0.5,
-                          label=label,linewidth=0.0)) #edgecolors="k",
-legend=plt.legend(handles=features,bbox_to_anchor=(0.30,0.40), loc="lower left",
-           bbox_transform=fig.transFigure, ncol=1,  borderaxespad=0.0, frameon=False,prop={'size': 4})#
-
-
-#==============================================================================
-print ("./figures/"+figname+".png")
-plt.savefig("./figures/"+figname+".pdf",dpi=800,bbox_inches="tight", pad_inches=0.01)
-plt.savefig("./figures/"+figname+".png",dpi=800,bbox_inches="tight", pad_inches=0.01)
-plt.savefig("./figures/"+figname+".jpg",dpi=800,bbox_inches="tight", pad_inches=0.01)
-os.system("rm -r "+re.split("-",figname)[0]+"*.txt")
-
-#====
-# for i in range(len(dfout["RIVER"].values)):
-#     print (dfout["LON"].values[i], dfout["LAT"].values[i],dfout["RIVER"].values[i].strip(),dfout["STATION"].values[i].strip(),dfout["max_rKGE"].values[i])
+    # print (exp, label, df.loc[df["rKGE"].idxmax(),['GRDC_ID','RIVER','STATION']]) # df[df["rKGE"].idxmax()]['GRDC_ID'])
+    print (exp, label) 
+    print (df.loc[df["rKGE"].nlargest(3).index.tolist(),['GRDC_ID','RIVER','STATION','rKGE']])
+    # dfout[label]=df["rKGE"].loc[(df["SAT_COV"]==1.0) & (df["UPAREA"]>=upa_thr) & (df["RIVNUM"]<=num_thr) & (df["RIVNUM"]<=7)]

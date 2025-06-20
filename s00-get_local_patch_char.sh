@@ -20,7 +20,7 @@
 which python
 
 # OMP Settings
-NCPUS=20
+NCPUS=1
 export OMP_NUM_THREADS=$NCPUS
 
 # cd $PBS_O_WORKDIR

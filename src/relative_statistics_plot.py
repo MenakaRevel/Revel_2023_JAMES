@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 from matplotlib.cbook import boxplot_stats
-from matplotlib.colors import BoundaryNorm #LogNorm,Normalize,ListedColormap
+from matplotlib.colors import BoundaryNorm, ListedColormap #LogNorm,Normalize,
 # from mpl_toolkits.axes_grid1 import make_axes_locatable
 # from mpl_toolkits.basemap import Basemap
 # import matplotlib.cm as cm
@@ -36,6 +36,7 @@ import re
 import os
 import seaborn as sns
 import pandas as pd
+# import colormaps as cmaps
 import warnings;warnings.filterwarnings('ignore')
 
 # import params as pm
@@ -225,7 +226,7 @@ def print_stat(data,labels):
 #====================================================================
 def plot_boxplot(df,num,labels,xlabel,colors="Paired",ax=None,ylim=[0,1]):
     ax=ax or plt.gca()
-    palette ="tab20c" #colors #sns.color_palette("Paired", len(labels)) 
+    palette ='Set1'#ListedColormap(['#1b9e77','#d95f03','#7570b4'])#cmaps.dark2_3) #colors #"tab20c" #colors #sns.color_palette("Paired", len(labels)) 
     flierprops = dict(marker='o', markerfacecolor='none', markersize=8,linestyle='none', markeredgecolor='k')
     boxprops = dict(color='grey')#facecolor='none'
     whiskerprops = dict(color='grey',linestyle="--")
@@ -233,9 +234,9 @@ def plot_boxplot(df,num,labels,xlabel,colors="Paired",ax=None,ylim=[0,1]):
     medianprops = dict(color='grey',linestyle="-",linewidth=1.0)
     meanprops = dict(marker='D', markeredgecolor='black',markerfacecolor='green',markersize=8)
     #
-    # df=pd.DataFrame(data=data, columns=labels)#, index=stationlist)
-    box=sns.boxplot(ax=ax,data=df, fliersize=0.0, palette=palette, whis=1.5\
-        ,meanline=True, width=0.8, linewidth=0.3, dodge=True\
+    # df=pd.DataFrame(data=data, columns=labels)#, index=stationlist) #
+    box=sns.boxplot(ax=ax,data=df, fliersize=0.0, palette=palette, whis=1.5
+        ,meanline=True, width=0.8, linewidth=0.3, dodge=True
         ,meanprops=meanprops,capprops=capprops,medianprops=medianprops) #"Paired"
     ax.axhline(0.0,color="k",linestyle="--",linewidth=0.5)
     ax.set_ylabel(xlabel, color='k',fontsize=10)
@@ -459,13 +460,16 @@ print (dfrKGE.head())
 # figure in A4 size
 # colorbar
 cmap=plt.cm.get_cmap("tab20c")
-norm=BoundaryNorm(np.arange(0,20+0.1,1),cmap.N)
+# cmap=cmaps.dark2_3
+norm=BoundaryNorm(np.arange(0,2+0.1,1),cmap.N)
 # colors=['xkcd:aqua green','xkcd:pastel blue','xkcd:soft pink','xkcd:pastel blue','xkcd:aqua green','xkcd:soft pink']
 # colors=["#afccdc","#3174a1","#b5d294","#3f913a","#f4adae","#bf353c"]
 # colors=["#3174a1","#3f913a","#bf353c"]
 # colors=["#004488","#ddaa33","#ba5566"]
 # colors=["#D81B60","#FFC107","#004D40"]
-colors=["#e77881","#236f79","#ab812e","#1e439a"]
+# colors=["#e77881","#236f79","#ab812e","#1e439a"]
+# colors = [plt.cm.Set1(0),plt.cm.Set1(1),plt.cm.Set1(2),plt.cm.Set1(3),plt.cm.Set1(4),plt.cm.Set1(5)]
+
 va_margin= 0.0#1.38#inch 
 ho_margin= 0.0#1.18#inch
 hgt=(11.69 - 2*va_margin)*(3.0/5.0)
@@ -481,7 +485,7 @@ print ("making plot")
 # rKGE boxplot
 print ("----> rKGE")
 ax1 = fig.add_subplot(G[0:2,:])
-plot_boxplot(dfrKGE,1,labels,"$rKGE$",colors=cmap,ax=ax1,ylim=[-0.7,0.5]) #"Paired"
+plot_boxplot(dfrKGE,1,labels,"$rKGE$",colors=cmap,ax=ax1,ylim=[-0.7,1.1]) #"Paired"
 print (dfrKGE.describe())
 # print (dfrKGE.select_dtypes(include='float64').gt(0).sum(axis=0))
 print ((dfrKGE.select_dtypes(include='float64').gt(0).sum(axis=0)/len(dfrKGE))*100.0)

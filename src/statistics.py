@@ -79,7 +79,26 @@ def KGE(s,o):
     r = np.corrcoef(o, s)[0,1]
     return 1 - np.sqrt((r - 1) ** 2 + (B - 1) ** 2 + (y - 1) ** 2)
 #========================================
-def KGED(s,o):
+def KGE2009(s,o):
+    """
+	Kling Gupta Efficiency (Kling et al., 2009)
+	input:
+        s: simulated
+        o: observed
+    output:
+        KGE: Kling Gupta Efficiency
+    """
+    o=ma.masked_where(o==-9999.0,o).filled(0.0)
+    s=ma.masked_where(o==-9999.0,s).filled(0.0)
+    o=np.compress(o>0.0,o)
+    s=np.compress(o>0.0,s)
+    s,o = filter_nan(s,o)
+    B = np.mean(s) / np.mean(o)
+    y = np.std(s) / np.std(o)
+    r = np.corrcoef(o, s)[0,1]
+    return 1 - np.sqrt((r - 1) ** 2 + (B - 1) ** 2 + (y - 1) ** 2)
+#========================================
+def KGED2012(s,o):
     """
 	Kling Gupta Efficiency Deviation (Kling et al., 2012, http://dx.doi.org/10.1016/j.jhydrol.2012.01.011)
 	input:
@@ -95,6 +114,25 @@ def KGED(s,o):
     s,o = filter_nan(s,o)
     B = np.mean(s) / np.mean(o)
     y = (np.std(s) / np.mean(s)) / (np.std(o) / np.mean(o))
+    r = np.corrcoef(o, s)[0,1]
+    return 1 - np.sqrt((r - 1) ** 2 + (y - 1) ** 2)
+#========================================
+def KGED2009(s,o):
+    """
+	Kling Gupta Efficiency Deviation (Kling et al., 2012, http://dx.doi.org/10.1016/j.jhydrol.2012.01.011)
+	input:
+        s: simulated
+        o: observed
+    output:
+        KGE: Kling Gupta Efficiency
+    """
+    o=ma.masked_where(o==-9999.0,o).filled(0.0)
+    s=ma.masked_where(o==-9999.0,s).filled(0.0)
+    o=np.compress(o>0.0,o)
+    s=np.compress(o>0.0,s)
+    s,o = filter_nan(s,o)
+    B = np.mean(s) / np.mean(o)
+    y = np.std(s) / np.std(o)
     r = np.corrcoef(o, s)[0,1]
     return 1 - np.sqrt((r - 1) ** 2 + (y - 1) ** 2)
 #========================================
@@ -114,6 +152,26 @@ def KGE_components(s,o):
     s,o = filter_nan(s,o)
     BR = np.mean(s) / np.mean(o)
     RV = (np.std(s) / np.mean(s)) / (np.std(o) / np.mean(o))
+    CC = np.corrcoef(o, s)[0,1]
+    val=1 - np.sqrt((CC - 1) ** 2 + (BR - 1) ** 2 + (RV - 1) ** 2)
+    return val, CC, BR, RV
+#========================================
+def KGE_components_2009(s,o):
+    """
+	Kling Gupta Efficiency (Kling et al., 2009)
+	input:
+        s: simulated
+        o: observed
+    output:
+        KGE: Kling Gupta Efficiency
+    """
+    o=ma.masked_where(o==-9999.0,o).filled(0.0)
+    s=ma.masked_where(o==-9999.0,s).filled(0.0)
+    o=np.compress(o>0.0,o)
+    s=np.compress(o>0.0,s)
+    s,o = filter_nan(s,o)
+    BR = np.mean(s) / np.mean(o)
+    RV = np.std(s) / np.std(o)
     CC = np.corrcoef(o, s)[0,1]
     val=1 - np.sqrt((CC - 1) ** 2 + (BR - 1) ** 2 + (RV - 1) ** 2)
     return val, CC, BR, RV

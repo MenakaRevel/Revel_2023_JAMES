@@ -225,15 +225,15 @@ fname=CaMa_dir+"/map/"+mapname+"/params.txt"
 with open(fname,"r") as f:
     lines=f.readlines()
 #-------
-nx     = int(filter(None, re.split(" ",lines[0]))[0])
-ny     = int(filter(None, re.split(" ",lines[1]))[0])
-gsize  = float(filter(None, re.split(" ",lines[3]))[0])
-lon0   = float(filter(None, re.split(" ",lines[4]))[0])
-lat0   = float(filter(None, re.split(" ",lines[7]))[0])
-west   = float(filter(None, re.split(" ",lines[4]))[0])
-east   = float(filter(None, re.split(" ",lines[5]))[0])
-south  = float(filter(None, re.split(" ",lines[6]))[0])
-north  = float(filter(None, re.split(" ",lines[7]))[0])
+nx     = int(list(filter(None, re.split(" ",lines[0])))[0])
+ny     = int(list(filter(None, re.split(" ",lines[1])))[0])
+gsize  = float(list(filter(None, re.split(" ",lines[3])))[0])
+lon0   = float(list(filter(None, re.split(" ",lines[4])))[0])
+lat0   = float(list(filter(None, re.split(" ",lines[7])))[0])
+west   = float(list(filter(None, re.split(" ",lines[4])))[0])
+east   = float(list(filter(None, re.split(" ",lines[5])))[0])
+south  = float(list(filter(None, re.split(" ",lines[6])))[0])
+north  = float(list(filter(None, re.split(" ",lines[7])))[0])
 #--------------------------------------------
 nextxy = CaMa_dir+"/map/"+mapname+"/nextxy.bin"
 rivwth = CaMa_dir+"/map/"+mapname+"/rivwth_gwdlr.bin"
